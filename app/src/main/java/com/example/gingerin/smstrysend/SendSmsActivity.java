@@ -1,25 +1,17 @@
 package com.example.gingerin.smstrysend;
 
 
-import android.support.v4.content.ContextCompat;
-import android.support.v4.app.ActivityCompat;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.telephony.SmsManager;
-import android.util.Base64;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-import com.example.gingerin.smstrysend.RSA;
 
 public class SendSmsActivity extends AppCompatActivity {
 
@@ -132,7 +124,18 @@ public class SendSmsActivity extends AppCompatActivity {
 
     public void encrypt(View view) {
         RSA r = new RSA(getApplicationContext());
-        r.generateKey();
+       // r.generateKey();
+        if (r.areKeysPresent()) {
+            Toast.makeText(this, "Keys present", Toast.LENGTH_LONG).show();
+        } else {
+
+            Toast.makeText(this, "Keys not present", Toast.LENGTH_LONG).show();
+            r.generateKey();
+        }
+        String unEncrypted = smsMessageET.getText().toString();
+        String recipient = toPhoneNumberET.getText().toString();
+       // r.encrypt(unEncrypted, r.getRecipientKey(recipient)); //TODO Add this method, along with a means of saving/retrieving recipient keys
+
     }
 
 }

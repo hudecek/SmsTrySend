@@ -1,19 +1,16 @@
 package com.example.gingerin.smstrysend;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+
 import javax.crypto.Cipher;
 
 public class RSA {
@@ -42,6 +39,7 @@ public class RSA {
             final KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
             keyGen.initialize(1024);
             final KeyPair key = keyGen.generateKeyPair();
+            Toast.makeText(context, "File directory is " + context.getFilesDir().toString(), Toast.LENGTH_SHORT).show();
 
             File privateKeyFile = new File(context.getFilesDir(), PRIVATE_KEY_FILE);
             File publicKeyFile = new File(context.getFilesDir(), PUBLIC_KEY_FILE);
@@ -49,11 +47,14 @@ public class RSA {
             // Create files to store public and private key
             if (privateKeyFile.getParentFile() != null) {
                 privateKeyFile.getParentFile().mkdirs();
+                Toast.makeText(context, "Private Key File created", Toast.LENGTH_SHORT).show();
             }
             privateKeyFile.createNewFile();
 
             if (publicKeyFile.getParentFile() != null) {
                 publicKeyFile.getParentFile().mkdirs();
+                Toast.makeText(context, "Public Key File created", Toast.LENGTH_SHORT).show();
+
             }
             publicKeyFile.createNewFile();
 
@@ -81,8 +82,8 @@ public class RSA {
      */
     public static boolean areKeysPresent() {
 
-        File privateKey = new File(PRIVATE_KEY_FILE);
-        File publicKey = new File(PUBLIC_KEY_FILE);
+        File privateKey = new File(context.getFilesDir(), PRIVATE_KEY_FILE);
+        File publicKey = new File(context.getFilesDir(), PUBLIC_KEY_FILE);
 
         return privateKey.exists() && publicKey.exists();
     }

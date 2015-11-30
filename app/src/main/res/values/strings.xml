@@ -5,5 +5,6 @@
     <string name="androidSMS">testSMS</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_receive_sms">ReceiveSmsActivity</string>
+    <string name="title_activity_key_mgmt">KeyMgmt</string>
 
 </resources>
