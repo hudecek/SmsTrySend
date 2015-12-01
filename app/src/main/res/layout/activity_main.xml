@@ -44,4 +44,16 @@
         android:layout_alignParentEnd="true"
         android:onClick="goToCompose" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="Key Management"
+        android:textColor="#eee"
+        android:id="@+id/keyMgmt"
+        android:textSize="20sp"
+        android:background="@color/buttonbg"
+        android:onClick="goToKeyMgmt"
+        android:layout_below="@+id/btnCompose"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
