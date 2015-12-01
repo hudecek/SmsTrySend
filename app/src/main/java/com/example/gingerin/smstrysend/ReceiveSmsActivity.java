@@ -110,7 +110,7 @@ public class ReceiveSmsActivity extends AppCompatActivity implements AdapterView
         arrayAdapter.clear();
         do {
             String str = smsInboxCursor.getString(indexAddress) +" at "+
-                    "\n" + smsInboxCursor.getString(indexBody) +dateText+ "\n";
+                    "\n" + smsInboxCursor.getString(indexBody) + "\n";
             arrayAdapter.add(str);
         } while (smsInboxCursor.moveToNext());
         smsInboxCursor.close();
@@ -122,6 +122,7 @@ public class ReceiveSmsActivity extends AppCompatActivity implements AdapterView
     }
 
     public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+        RSA r = new RSA(this);
         try {
             String[] smsMessages = smsMessagesList.get(pos).split("\n");
             String address = smsMessages[0];
@@ -130,9 +131,15 @@ public class ReceiveSmsActivity extends AppCompatActivity implements AdapterView
                 smsMessage += smsMessages[i];
             }
 
-            String smsMessageStr = address + "\n";
-            smsMessageStr += smsMessage;
-            Toast.makeText(this, smsMessageStr, Toast.LENGTH_SHORT).show();
+            if(!r.areKeysPresent()) {
+                r.generateKey();
+            }
+            String smsMessageStr;
+            smsMessageStr = new String(r.decrypt(smsMessage), "ISO-8859-1");
+
+            smsMessageStr = address + "\n" + smsMessageStr;
+            Toast.makeText(this, smsMessageStr, Toast.LENGTH_LONG);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

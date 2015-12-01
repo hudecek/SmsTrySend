@@ -1,6 +1,7 @@
 package com.example.gingerin.smstrysend;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -74,68 +76,60 @@ public class RSA {
 
     }
 
-    /**
-     * The method checks if the pair of public and private key has been generated.
-     *
-     * @return flag indicating if the pair of keys were generated.
-     */
-    public static boolean areKeysPresent() {
 
-        File privateKey = new File(PRIVATE_KEY_FILE);
-        File publicKey = new File(PUBLIC_KEY_FILE);
+    public boolean areKeysPresent() {
+
+        File privateKey = new File(context.getFilesDir(), PRIVATE_KEY_FILE);
+        File publicKey = new File(context.getFilesDir(), PUBLIC_KEY_FILE);
 
         return privateKey.exists() && publicKey.exists();
     }
 
-    /**
-     * Encrypt the plain text using public key.
-     *
-     * @param text
-     *          : original plain text
-     * @param key
-     *          :The public key
-     * @return Encrypted text
-     * @throws java.lang.Exception
-     */
-    public static byte[] encrypt(String text, PublicKey key) {
+
+    public byte[] encrypt(String text) {
         byte[] cipherText = null;
         try {
+            File publicKeyFile = new File(context.getFilesDir(), PUBLIC_KEY_FILE);
+            ObjectInputStream inputStream = new ObjectInputStream(
+                    new FileInputStream(publicKeyFile));
+            final PublicKey key = (PublicKey) inputStream.readObject();
+
             // get an RSA cipher object and print the provider
             final Cipher cipher = Cipher.getInstance("RSA");
+
             // encrypt the plain text using the public key
             cipher.init(Cipher.ENCRYPT_MODE, key);
-            cipherText = cipher.doFinal(text.getBytes());
+            cipherText = cipher.doFinal(text.getBytes("ISO-8859-1"));
         } catch (Exception e) {
             e.printStackTrace();
         }
         return cipherText;
     }
 
-    /**
-     * Decrypt text using private key.
-     *
-     * @param text
-     *          :encrypted text
-     * @param key
-     *          :The private key
-     * @return plain text
-     * @throws java.lang.Exception
-     */
-    public static String decrypt(byte[] text, PrivateKey key) {
+
+    public byte[] decrypt(String text) {
         byte[] decryptedText = null;
         try {
+            byte[] textByte = text.getBytes("ISO-8859-1");
+            //String str = new String(decryptedText, StandardCharsets.UTF_8);
+
             // get an RSA cipher object and print the provider
             final Cipher cipher = Cipher.getInstance("RSA");
 
+            File privateKeyFile = new File(context.getFilesDir(), PRIVATE_KEY_FILE);
+            ObjectInputStream inputStream = new ObjectInputStream(
+                    new FileInputStream(privateKeyFile));
+            final PrivateKey privateKey = (PrivateKey) inputStream.readObject();
+
             // decrypt the text using the private key
-            cipher.init(Cipher.DECRYPT_MODE, key);
-            decryptedText = cipher.doFinal(text);
+            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            decryptedText = cipher.doFinal(textByte);
+
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
-        return new String(decryptedText);
+        return decryptedText;
     }
 
     /**
