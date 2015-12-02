@@ -16,6 +16,7 @@ import java.io.ObjectOutputStream;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
@@ -102,16 +103,21 @@ public class KeyMgmt extends AppCompatActivity {
 
 
     protected void retrieveKey(){
-        r.generateKey();
+
         File publicKey = new File(this.getFilesDir(), r.PUBLIC_KEY_FILE);
         ObjectInputStream inputStream = null;
 
+        File privateKey = new File(this.getFilesDir(), r.PRIVATE_KEY_FILE);
 
+        PrivateKey privateKey1 = null;
         PublicKey publicKey1 = null;
         // Encrypt the string using the public key
         try {
             inputStream = new ObjectInputStream(new FileInputStream(publicKey));
             publicKey1 = (PublicKey) inputStream.readObject();
+            inputStream = new ObjectInputStream(new FileInputStream(privateKey));
+            privateKey1 = (PrivateKey) inputStream.readObject();
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -119,6 +125,8 @@ public class KeyMgmt extends AppCompatActivity {
         }
 
         Toast.makeText(this, "Your public key is " + publicKey1.toString(), Toast.LENGTH_LONG).show();
+        System.out.println(privateKey1.toString());
+        System.out.println(publicKey1.toString());
 
     }
 

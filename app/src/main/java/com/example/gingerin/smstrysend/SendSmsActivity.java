@@ -11,14 +11,9 @@ import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
 
 public class SendSmsActivity extends AppCompatActivity {
 
@@ -132,13 +127,7 @@ public class SendSmsActivity extends AppCompatActivity {
     public void encrypt(View view) {
         RSA r = new RSA(getApplicationContext());
        // r.generateKey();
-        if (r.areKeysPresent()) {
-            Toast.makeText(this, "Keys present", Toast.LENGTH_LONG).show();
-        } else {
 
-            Toast.makeText(this, "Keys not present", Toast.LENGTH_LONG).show();
-            r.generateKey();
-        }
         String unEncrypted = smsMessageET.getText().toString();
         String recipient = toPhoneNumberET.getText().toString();
 
@@ -149,8 +138,10 @@ public class SendSmsActivity extends AppCompatActivity {
             byte[] encByte = r.encrypt(unEncrypted, key);
             try {
                 String encrypted = new String(encByte, "ISO-8859-1");
-                TextView encTextEdit = (TextView) findViewById(R.id.encryptedText);
-                encTextEdit.setText(encrypted);
+
+                System.out.println(encrypted);
+
+                smsMessageET.setText(encrypted);
             } catch (Exception e) {
                 e.printStackTrace();
             }
