@@ -86,13 +86,14 @@ public class RSA {
     }
 
 
-    public byte[] encrypt(String text) {
+    public byte[] encrypt(String text, PublicKey key) {
         byte[] cipherText = null;
         try {
+            /*
             File publicKeyFile = new File(context.getFilesDir(), PUBLIC_KEY_FILE);
             ObjectInputStream inputStream = new ObjectInputStream(
                     new FileInputStream(publicKeyFile));
-            final PublicKey key = (PublicKey) inputStream.readObject();
+            final PublicKey key = (PublicKey) inputStream.readObject();*/
 
             // get an RSA cipher object and print the provider
             final Cipher cipher = Cipher.getInstance("RSA");
@@ -130,6 +131,24 @@ public class RSA {
             ex.printStackTrace();
         }
         return decryptedText;
+    }
+
+    public PublicKey getRecipientKey(String recipient) {
+        PublicKey recKey = null;
+        try {
+            File recPublicKeyFile = new File(context.getFilesDir(), recipient);
+            if(recPublicKeyFile.exists()) {
+                ObjectInputStream inputStream = new ObjectInputStream(
+                        new FileInputStream(recPublicKeyFile));
+                recKey = (PublicKey) inputStream.readObject();
+            } else {
+                return null;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return recKey;
     }
 
     /**
