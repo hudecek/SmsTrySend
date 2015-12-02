@@ -28,17 +28,6 @@
         android:inputType="textMultiLine"/>
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Receiver's key:"/>
-
-    <EditText
-        android:id="@+id/pasteKey"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textMultiLine"
-         />
-    <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/encryptedText"/>

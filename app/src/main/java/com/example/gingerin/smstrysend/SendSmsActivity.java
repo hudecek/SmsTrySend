@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.security.PublicKey;
+
 public class SendSmsActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 1;
@@ -134,8 +136,20 @@ public class SendSmsActivity extends AppCompatActivity {
         }
         String unEncrypted = smsMessageET.getText().toString();
         String recipient = toPhoneNumberET.getText().toString();
-       // r.encrypt(unEncrypted, r.getRecipientKey(recipient)); //TODO Add this method, along with a means of saving/retrieving recipient keys
 
+        PublicKey key = r.getRecipientKey(recipient);
+        if(key == null) {
+            Toast.makeText(this, "No public key specified for number " + recipient + ". Add key in Key Management.", Toast.LENGTH_LONG).show();
+        } else {
+            byte[] encByte = r.encrypt(unEncrypted, key);
+            try {
+                String encrypted = new String(encByte, "ISO-8859-1");
+                EditText encTextEdit = (EditText) findViewById(R.id.encryptedText);
+                encTextEdit.setText(encrypted);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

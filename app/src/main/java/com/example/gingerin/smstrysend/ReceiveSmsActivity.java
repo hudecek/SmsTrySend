@@ -138,7 +138,7 @@ public class ReceiveSmsActivity extends AppCompatActivity implements AdapterView
             smsMessageStr = new String(r.decrypt(smsMessage), "ISO-8859-1");
 
             smsMessageStr = address + "\n" + smsMessageStr;
-            Toast.makeText(this, smsMessageStr, Toast.LENGTH_LONG);
+            Toast.makeText(this, smsMessageStr, Toast.LENGTH_LONG).show();
 
         } catch (Exception e) {
             e.printStackTrace();
