@@ -7,7 +7,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/activity_key_mgmt"
     tools:context="com.example.gingerin.smstrysend.KeyMgmt"
     android:weightSum="1"
     android:orientation="vertical">
@@ -17,7 +16,7 @@
         android:layout_height="wrap_content"
         android:inputType="phone"
         android:ems="10"
-        android:id="@+id/editText"
+        android:id="@+id/number"
         android:hint="Contact Phone #" />
 
     <EditText
@@ -25,7 +24,7 @@
         android:layout_height="wrap_content"
         android:inputType="number"
         android:ems="10"
-        android:id="@+id/editText2"
+        android:id="@+id/exponent"
         android:hint="Public Exponent" />
 
     <EditText
@@ -33,14 +32,14 @@
         android:layout_height="wrap_content"
         android:inputType="number"
         android:ems="10"
-        android:id="@+id/editText3"
+        android:id="@+id/modulus"
         android:hint="Public Modulus" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add Recipient Key"
-        android:id="@+id/button" />
+        android:id="@+id/addKey" />
 
     <Button
         android:layout_width="wrap_content"
