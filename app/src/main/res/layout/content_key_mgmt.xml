@@ -39,6 +39,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="#333"
         android:text="Add Recipient Key"
         android:id="@+id/button" />
 
@@ -46,6 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Retrieve Key"
+        android:textColor="#333"
         android:id="@+id/retrieveKey"
         android:layout_marginTop="20dp" />
 </LinearLayout>

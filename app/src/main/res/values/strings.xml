@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">SmsTrySend</string>
+    <string name="app_name">CryptoSMS</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_send_sms">SendSmsActivity</string>
-    <string name="androidSMS">testSMS</string>
+    <string name="androidSMS">CryptoSMS</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_receive_sms">ReceiveSmsActivity</string>
     <string name="title_activity_key_mgmt">KeyMgmt</string>
