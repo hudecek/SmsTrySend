@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -114,6 +115,12 @@ public class ReceiveSmsActivity extends AppCompatActivity implements AdapterView
 
     public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
         RSA r = new RSA(this);
+        // r.generateKey();
+        if (!r.areKeysPresent()) {
+
+            Toast.makeText(this, "Keys not present", Toast.LENGTH_LONG).show();
+            r.generateKey();
+        }
         try {
             String[] smsMessages = smsMessagesList.get(pos).split("\n");
             String address = smsMessages[0];
@@ -122,14 +129,18 @@ public class ReceiveSmsActivity extends AppCompatActivity implements AdapterView
                 smsMessage += smsMessages[i];
             }
 
+            System.out.println("Message: " + smsMessage);
+
             if(!r.areKeysPresent()) {
                 r.generateKey();
             }
+
+            byte[] decoded = Base64.decode(smsMessage.getBytes(), Base64.DEFAULT);
             String smsMessageStr;
-            smsMessageStr = new String(r.decrypt(smsMessage), "ISO-8859-1");
+            smsMessageStr = new String(r.decrypt(decoded));
 
             smsMessageStr = address + "\n" + smsMessageStr;
-            Toast.makeText(this, smsMessageStr, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Decrypted:" + smsMessageStr, Toast.LENGTH_LONG).show();
 
         } catch (Exception e) {
             e.printStackTrace();

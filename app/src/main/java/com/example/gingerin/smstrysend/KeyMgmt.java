@@ -11,9 +11,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
+import java.nio.channels.FileChannel;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -109,6 +112,41 @@ public class KeyMgmt extends AppCompatActivity {
 
         File privateKey = new File(this.getFilesDir(), r.PRIVATE_KEY_FILE);
 
+        /*
+            copy public key to new key REMOVE LATER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+         */
+        try {
+            File sourceFile = new File(this.getFilesDir(), r.PUBLIC_KEY_FILE);
+            File destFile = new File(this.getFilesDir(), "5554.key");
+
+            if (!destFile.getParentFile().exists())
+                destFile.getParentFile().mkdirs();
+
+            if (!destFile.exists()) {
+                destFile.createNewFile();
+            }
+
+            FileChannel source = null;
+            FileChannel destination = null;
+
+            try {
+                source = new FileInputStream(sourceFile).getChannel();
+                destination = new FileOutputStream(destFile).getChannel();
+                destination.transferFrom(source, 0, source.size());
+            } finally {
+                if (source != null) {
+                    source.close();
+                }
+                if (destination != null) {
+                    destination.close();
+                }
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        //End of this shit/!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         PrivateKey privateKey1 = null;
         PublicKey publicKey1 = null;
         // Encrypt the string using the public key
@@ -120,7 +158,7 @@ public class KeyMgmt extends AppCompatActivity {
 
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 

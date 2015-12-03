@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.util.Base64;
 
 import java.security.PublicKey;
 
@@ -118,15 +119,13 @@ public class SendSmsActivity extends AppCompatActivity {
                 }
                 return;
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
     }
 
+
+
     public void encrypt(View view) {
         RSA r = new RSA(getApplicationContext());
-       // r.generateKey();
 
         String unEncrypted = smsMessageET.getText().toString();
         String recipient = toPhoneNumberET.getText().toString();
@@ -135,13 +134,24 @@ public class SendSmsActivity extends AppCompatActivity {
         if(key == null) {
             Toast.makeText(this, "No public key specified for number " + recipient + ". Add key in Key Management.", Toast.LENGTH_LONG).show();
         } else {
-            byte[] encByte = r.encrypt(unEncrypted, key);
+            byte[] encByte = r.encrypt(unEncrypted.getBytes(), key);
             try {
-                String encrypted = new String(encByte, "ISO-8859-1");
 
-                System.out.println(encrypted);
+                byte[] encoded = Base64.encode(encByte, Base64.DEFAULT);
 
-                smsMessageET.setText(encrypted);
+                String textMessage = "";
+                textMessage += new String(encoded);
+
+                smsMessageET.setText(textMessage);
+                System.out.println(textMessage);
+
+            /* Works
+                String something = "Text";
+                byte[] encryptedSth = r.encrypt(something.getBytes(), key);
+                byte[] decryptedSth = r.decrypt(encryptedSth);
+                System.out.println("Before: " + something + " After: " + new String(decryptedSth));
+            */
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
