@@ -147,21 +147,40 @@ public class SendSmsActivity extends AppCompatActivity {
         String unEncrypted = smsMessageET.getText().toString();
         String recipient = toPhoneNumberET.getText().toString();
 
-        PublicKey key = r.getRecipientKey(recipient + ".key");
+        //PublicKey key = r.getRecipientKey(recipient + ".key"); //Use our own public key for testing
+        PublicKey key = r.readPublicKeyFromFile("public.key"); //TODO Clean this up
         if(key == null) {
             Toast.makeText(this, "No public key specified for number " + recipient + ". Add key in Key Management.", Toast.LENGTH_LONG).show();
         } else {
-            byte[] encByte = r.encrypt(unEncrypted.getBytes(), key);
+            byte[] encByte = r.rsaEncrypt(unEncrypted.getBytes(), "public.key");
             try {
 
-                byte[] encoded = Base64.encode(encByte, Base64.DEFAULT);
+                String encoded = Base64.encodeToString(encByte, Base64.DEFAULT);
 
 
                 String textMessage = "";
-                textMessage += new String(encoded);  //Change from encoded to encByte
+                textMessage += encoded;  //Change from encoded to encByte
                 Toast.makeText(this, "Encrypted text byte length is " + encByte.length, Toast.LENGTH_LONG).show();
                 smsMessageET.setText(textMessage);
                 System.out.println(textMessage);
+                byte[] decodeTest = Base64.decode(textMessage, Base64.DEFAULT);
+                Toast.makeText(this, "Decoded text byte length is " + decodeTest.length, Toast.LENGTH_LONG).show();
+                String decodeStringTest = Base64.encodeToString(decodeTest, Base64.DEFAULT);
+                Toast.makeText(this, decodeStringTest, Toast.LENGTH_LONG).show();
+                //Now test decryption
+
+              // byte[] decryptTest =  r.decrypt(decodeTest);
+               // String decryptedText = new String(decryptTest);
+                byte[] decryptTest2 = r.rsaDecrypt(encByte);
+                String decryptedText2 = new String(decryptTest2);
+                //Toast.makeText(this, decryptedText, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, decryptedText2, Toast.LENGTH_LONG).show();
+//                if (unEncrypted.getBytes() == decryptTest2){
+//                    Toast.makeText(this, "unEncrypted and decrypted are equal", Toast.LENGTH_LONG).show();
+//
+//                }else {
+//                    Toast.makeText(this, "unEncrypted and decrypted are unequal", Toast.LENGTH_LONG).show();
+//                }
 
 
 
