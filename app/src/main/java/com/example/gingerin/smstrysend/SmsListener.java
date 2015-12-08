@@ -18,23 +18,43 @@ public class SmsListener extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Bundle intentExtras = intent.getExtras();
         if (intentExtras != null) {
-            Object[] sms = (Object[]) intentExtras.get(SMS_BUNDLE);
+            Object[] pdu = (Object[]) intentExtras.get(SMS_BUNDLE);
             String smsMessageStr = "";
-            for (int i = 0; i < sms.length; ++i) {
-                SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) sms[i]);
+            SmsMessage[] messages = new SmsMessage[pdu.length];
+            String smsBody = "";
+            for (int i = 0; i < pdu.length; ++i) {
+                //SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) sms[i]);
 
-                String smsBody = smsMessage.getMessageBody();
-                String address = smsMessage.getOriginatingAddress();
-                long timeMillis = smsMessage.getTimestampMillis();
+                messages[i] = SmsMessage.createFromPdu((byte[]) pdu[i]);
+                //String smsBody = smsMessage.getMessageBody();
 
-                Date date = new Date(timeMillis);
-                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yy", Locale.US);
-                String dateText = format.format(date);
 
-                smsMessageStr += address +" at "+"\t"+ dateText + "\n";
-                smsMessageStr += smsBody + "\n";
+
             }
+            SmsMessage sms = messages[0];
+            try {
+                if (messages.length == 1 || sms.isReplace()) {
+                    smsBody = sms.getDisplayMessageBody();
+                } else {
+                    StringBuilder bodyText = new StringBuilder();
+                    for (int i = 0; i < messages.length; i++) {
+                        bodyText.append(messages[i].getMessageBody());
+                    }
+                    smsBody = bodyText.toString();
+                }
+            } catch (Exception e) {
+
+            }
+            String address = messages[0].getOriginatingAddress();
+            long timeMillis = messages[0].getTimestampMillis();
+
+            Date date = new Date(timeMillis);
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yy", Locale.US);
+            String dateText = format.format(date);
             Toast.makeText(context, smsMessageStr, Toast.LENGTH_SHORT).show();
+
+            smsMessageStr += address +" at "+"\t"+ dateText + "\n";
+            smsMessageStr += smsBody + "\n";
 
             //this will update the UI with message
             ReceiveSmsActivity inst = ReceiveSmsActivity.instance();

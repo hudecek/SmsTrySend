@@ -8,18 +8,20 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import android.util.Base64;
 
 import java.security.PublicKey;
+import java.util.ArrayList;
 
 public class SendSmsActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 1;
     Button sendSMSBtn;
+    Button encryptBtn;
     EditText toPhoneNumberET;
     EditText smsMessageET;
     String encryptedValue;
@@ -31,6 +33,15 @@ public class SendSmsActivity extends AppCompatActivity {
         sendSMSBtn = (Button) findViewById(R.id.sendSMSBtn);
         toPhoneNumberET = (EditText) findViewById(R.id.toPhoneNumberET);
         smsMessageET = (EditText) findViewById(R.id.smsMessageET);
+        encryptBtn = (Button) findViewById(R.id.encryptBtn);
+
+
+        encryptBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                encrypt(v);
+            }
+        });
 
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this, //this?
@@ -84,10 +95,16 @@ public class SendSmsActivity extends AppCompatActivity {
 
         try {
             SmsManager smsManager = SmsManager.getDefault();
+            if (smsMessage.length() > 160){
+                ArrayList<String> messages = smsManager.divideMessage(smsMessage);
+                smsManager.sendMultipartTextMessage(toPhoneNumber, null, messages, null, null); //TODO THis is NEW. Maybe rejoin upon receipt?
+            }else {
             smsManager.sendTextMessage(toPhoneNumber, null, smsMessage, null, null);
-            Toast.makeText(getApplicationContext(), "SMS Sent", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "SMS Sent", Toast.LENGTH_LONG).show();}
         } catch (Exception e) {
             e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "ERROR, SMS Not Sent", Toast.LENGTH_LONG).show();
+
         }
 
     }
@@ -139,11 +156,19 @@ public class SendSmsActivity extends AppCompatActivity {
 
                 byte[] encoded = Base64.encode(encByte, Base64.DEFAULT);
 
-                String textMessage = "";
-                textMessage += new String(encoded);
 
+                String textMessage = "";
+                textMessage += new String(encoded);  //Change from encoded to encByte
+                Toast.makeText(this, "Encrypted text byte length is " + encByte.length, Toast.LENGTH_LONG).show();
                 smsMessageET.setText(textMessage);
                 System.out.println(textMessage);
+
+
+
+
+
+
+
 
             /* Works
                 String something = "Text";
