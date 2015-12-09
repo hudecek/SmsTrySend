@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
+import android.util.Base64;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
@@ -13,52 +14,58 @@ import java.util.Locale;
 
 public class SmsListener extends BroadcastReceiver {
 
+    RSA r = new RSA();
+
     public static final String SMS_BUNDLE = "pdus";
 
     public void onReceive(Context context, Intent intent) {
-        Bundle intentExtras = intent.getExtras();
-        if (intentExtras != null) {
-            Object[] pdu = (Object[]) intentExtras.get(SMS_BUNDLE);
-            String smsMessageStr = "";
-            SmsMessage[] messages = new SmsMessage[pdu.length];
-            String smsBody = "";
+        Bundle bundle = intent.getExtras();
+
+        String recMsgString = "";
+        String fromAddress = "";
+        String smsBody = "";
+        SmsMessage recMsg = null;
+        byte[] data = null;
+        if (bundle != null) {
+            Object[] pdu = (Object[]) bundle.get(SMS_BUNDLE);
             for (int i = 0; i < pdu.length; ++i) {
                 //SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) sms[i]);
 
-                messages[i] = SmsMessage.createFromPdu((byte[]) pdu[i]);
+                recMsg = SmsMessage.createFromPdu((byte[]) pdu[i]);
                 //String smsBody = smsMessage.getMessageBody();
+                try {
+                    data = recMsg.getUserData();
+                } catch (Exception e){
 
-
-
-            }
-            SmsMessage sms = messages[0];
-            try {
-                if (messages.length == 1 || sms.isReplace()) {
-                    smsBody = sms.getDisplayMessageBody();
-                } else {
-                    StringBuilder bodyText = new StringBuilder();
-                    for (int i = 0; i < messages.length; i++) {
-                        bodyText.append(messages[i].getMessageBody());
-                    }
-                    smsBody = bodyText.toString();
                 }
-            } catch (Exception e) {
+                if (data != null){
+                    byte[] sixfour = Base64.decode(data, Base64.DEFAULT);
+                   byte[] decoded = r.decrypt(sixfour);
+                    smsBody = new String(decoded);
+
+                } else {
+                    Toast.makeText(ReceiveSmsActivity.instance().getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
+                }
+
 
             }
-            String address = messages[0].getOriginatingAddress();
-            long timeMillis = messages[0].getTimestampMillis();
+
+            String address = recMsg.getOriginatingAddress();
+            long timeMillis =recMsg.getTimestampMillis();
 
             Date date = new Date(timeMillis);
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yy", Locale.US);
             String dateText = format.format(date);
-            Toast.makeText(context, smsMessageStr, Toast.LENGTH_SHORT).show();
+
+
+            String smsMessageStr = "";
 
             smsMessageStr += address +" at "+"\t"+ dateText + "\n";
             smsMessageStr += smsBody + "\n";
 
             //this will update the UI with message
             ReceiveSmsActivity inst = ReceiveSmsActivity.instance();
-            inst.updateList(smsMessageStr);
+            inst.updateList(smsBody); //change from smsMessageStr to smsBody
         }
     }
 }

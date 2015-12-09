@@ -8,18 +8,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.math.BigInteger;
-import java.nio.channels.FileChannel;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
@@ -107,64 +101,9 @@ public class KeyMgmt extends AppCompatActivity {
 
     protected void retrieveKey(){
 
-        File publicKey = new File(this.getFilesDir(), r.PUBLIC_KEY_FILE);
-        ObjectInputStream inputStream = null;
+      PublicKey myKey = r.readPublicKeyFromFile("public.key");
 
-        File privateKey = new File(this.getFilesDir(), r.PRIVATE_KEY_FILE);
-
-        /*
-            copy public key to new key REMOVE LATER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-         */
-        try {
-            File sourceFile = new File(this.getFilesDir(), r.PUBLIC_KEY_FILE);
-            File destFile = new File(this.getFilesDir(), "5554.key");
-
-            if (!destFile.getParentFile().exists())
-                destFile.getParentFile().mkdirs();
-
-            if (!destFile.exists()) {
-                destFile.createNewFile();
-            }
-
-            FileChannel source = null;
-            FileChannel destination = null;
-
-            try {
-                source = new FileInputStream(sourceFile).getChannel();
-                destination = new FileOutputStream(destFile).getChannel();
-                destination.transferFrom(source, 0, source.size());
-            } finally {
-                if (source != null) {
-                    source.close();
-                }
-                if (destination != null) {
-                    destination.close();
-                }
-            }
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-
-        //End of this shit/!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        PrivateKey privateKey1 = null;
-        PublicKey publicKey1 = null;
-        // Encrypt the string using the public key
-        try {
-            inputStream = new ObjectInputStream(new FileInputStream(publicKey));
-            publicKey1 = (PublicKey) inputStream.readObject();
-            inputStream = new ObjectInputStream(new FileInputStream(privateKey));
-            privateKey1 = (PrivateKey) inputStream.readObject();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-    } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        Toast.makeText(this, "Your public key is " + publicKey1.toString(), Toast.LENGTH_LONG).show();
-        System.out.println(privateKey1.toString());
-        System.out.println(publicKey1.toString());
+        Toast.makeText(this, "Your public key is " + myKey.toString(), Toast.LENGTH_LONG).show();
 
     }
 

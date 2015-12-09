@@ -137,7 +137,7 @@ public class ReceiveSmsActivity extends AppCompatActivity implements AdapterView
 
             byte[] decoded = Base64.decode(smsMessage.getBytes(), Base64.DEFAULT);
             String smsMessageStr;
-            smsMessageStr = new String(r.decrypt(decoded));
+            smsMessageStr = new String(r.rsaDecrypt(decoded));
 
             smsMessageStr = address + "\n" + smsMessageStr;
             Toast.makeText(this, "Decrypted:" + smsMessageStr, Toast.LENGTH_LONG).show();

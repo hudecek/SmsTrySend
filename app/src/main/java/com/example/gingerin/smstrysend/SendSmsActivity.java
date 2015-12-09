@@ -15,7 +15,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.security.PublicKey;
-import java.util.ArrayList;
 
 public class SendSmsActivity extends AppCompatActivity {
 
@@ -93,20 +92,24 @@ public class SendSmsActivity extends AppCompatActivity {
         String toPhoneNumber = toPhoneNumberET.getText().toString();
         String smsMessage = smsMessageET.getText().toString();
 
-        try {
-            SmsManager smsManager = SmsManager.getDefault();
-            if (smsMessage.length() > 160){
-                ArrayList<String> messages = smsManager.divideMessage(smsMessage);
-                smsManager.sendMultipartTextMessage(toPhoneNumber, null, messages, null, null); //TODO THis is NEW. Maybe rejoin upon receipt?
-            }else {
-            smsManager.sendTextMessage(toPhoneNumber, null, smsMessage, null, null);
-            Toast.makeText(getApplicationContext(), "SMS Sent", Toast.LENGTH_LONG).show();}
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(getApplicationContext(), "ERROR, SMS Not Sent", Toast.LENGTH_LONG).show();
+//        try {
+//            SmsManager smsManager = SmsManager.getDefault();
+//            if (smsMessage.length() > 160){
+//                ArrayList<String> messages = smsManager.divideMessage(smsMessage);
+//                smsManager.sendMultipartTextMessage(toPhoneNumber, null, messages, null, null); //TODO THis is NEW. Maybe rejoin upon receipt?
+//            }else {
+//            smsManager.sendTextMessage(toPhoneNumber, null, smsMessage, null, null);
+//            Toast.makeText(getApplicationContext(), "SMS Sent", Toast.LENGTH_LONG).show();}
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            Toast.makeText(getApplicationContext(), "ERROR, SMS Not Sent", Toast.LENGTH_LONG).show();
+//
+//        }
+        byte[] decodeTest = Base64.decode(smsMessage, Base64.DEFAULT);
 
-        }
-
+        short SMS_PORT = 8901; //you can use a different port if you'd like. I believe it just has to be an int value.
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendDataMessage(toPhoneNumber, null, SMS_PORT, decodeTest, null, null);
     }
 
     @Override
@@ -147,12 +150,12 @@ public class SendSmsActivity extends AppCompatActivity {
         String unEncrypted = smsMessageET.getText().toString();
         String recipient = toPhoneNumberET.getText().toString();
 
-        //PublicKey key = r.getRecipientKey(recipient + ".key"); //Use our own public key for testing
-        PublicKey key = r.readPublicKeyFromFile("public.key"); //TODO Clean this up
+        PublicKey key = r.readPublicKeyFromFile(recipient + ".key"); //Use our own public key for testing
+        //PublicKey key = r.readPublicKeyFromFile("public.key"); //TODO Clean this up
         if(key == null) {
             Toast.makeText(this, "No public key specified for number " + recipient + ". Add key in Key Management.", Toast.LENGTH_LONG).show();
         } else {
-            byte[] encByte = r.rsaEncrypt(unEncrypted.getBytes(), "public.key");
+            byte[] encByte = r.rsaEncrypt(unEncrypted.getBytes(), recipient + ".key");
             try {
 
                 String encoded = Base64.encodeToString(encByte, Base64.DEFAULT);
@@ -160,21 +163,23 @@ public class SendSmsActivity extends AppCompatActivity {
 
                 String textMessage = "";
                 textMessage += encoded;  //Change from encoded to encByte
-                Toast.makeText(this, "Encrypted text byte length is " + encByte.length, Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, "Encrypted text byte length is " + encByte.length, Toast.LENGTH_LONG).show();
                 smsMessageET.setText(textMessage);
-                System.out.println(textMessage);
+                //System.out.println(textMessage);
                 byte[] decodeTest = Base64.decode(textMessage, Base64.DEFAULT);
-                Toast.makeText(this, "Decoded text byte length is " + decodeTest.length, Toast.LENGTH_LONG).show();
-                String decodeStringTest = Base64.encodeToString(decodeTest, Base64.DEFAULT);
-                Toast.makeText(this, decodeStringTest, Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, "Decoded text byte length is " + decodeTest.length, Toast.LENGTH_LONG).show();
+                //String decodeStringTest = Base64.encodeToString(decodeTest, Base64.DEFAULT);
+                //Toast.makeText(this, decodeStringTest, Toast.LENGTH_LONG).show();
                 //Now test decryption
+
 
               // byte[] decryptTest =  r.decrypt(decodeTest);
                // String decryptedText = new String(decryptTest);
-                byte[] decryptTest2 = r.rsaDecrypt(encByte);
-                String decryptedText2 = new String(decryptTest2);
+//                byte[] decryptTest2 = r.rsaDecrypt(decodeTest);
+//                String decryptedText2 = new String(decryptTest2);
+
                 //Toast.makeText(this, decryptedText, Toast.LENGTH_LONG).show();
-                Toast.makeText(this, decryptedText2, Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, decryptedText2, Toast.LENGTH_LONG).show();
 //                if (unEncrypted.getBytes() == decryptTest2){
 //                    Toast.makeText(this, "unEncrypted and decrypted are equal", Toast.LENGTH_LONG).show();
 //

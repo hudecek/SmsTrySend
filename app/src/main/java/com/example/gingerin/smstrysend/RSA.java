@@ -33,6 +33,10 @@ public class RSA {
         context = c;
     }
 
+    public RSA(){
+
+    }
+
     public static final String PRIVATE_KEY_FILE = "private.key";
     public static final String PUBLIC_KEY_FILE = "public.key";
 
@@ -169,6 +173,7 @@ public class RSA {
             RSAPublicKeySpec keySpec = new RSAPublicKeySpec(m, e);
             KeyFactory fact = KeyFactory.getInstance("RSA");
             PublicKey pubKey = fact.generatePublic(keySpec);
+//            PublicKey pubKey = (PublicKey) oin.readObject();
             return pubKey;
         } catch (Exception e) {
             throw new RuntimeException("Spurious serialisation error", e);
